@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import javax.servlet.ServletException;
@@ -49,12 +50,17 @@ public class userCheck extends HttpServlet {
                 conn = DriverManager.getConnection(url + dbName, userName, password);
                 System.out.println("Database connected.");
  
-                Statement st = conn.createStatement();
-                String query = "SELECT * FROM  login where uname='"+user+"' and pwd='"+pwd+"'";
-                out.println("Query : " + query);
-                System.out.printf(query);
-                ResultSet res = st.executeQuery(query);
+//                Statement st = conn.createStatement();
+                PreparedStatement pst = conn.prepareStatement("SELECT * FROM  login where uname=? and pwd=?");
+                pst.setString(1, user);
+                pst.setString(2, pwd);
+//                String query = "SELECT * FROM  login where uname='"+user+"' and pwd='"+pwd+"'";
+//                out.println("Query : " + query);
+//                System.out.printf(query);
+                ResultSet res = pst.executeQuery();
+                out.println("Secure entry");
                 out.println("Results");
+                
                 while (res.next()) {
                     String s = res.getString("uname");
                     out.println("\t\t" + s);
